@@ -16,13 +16,13 @@ HOST_INDEX = 0
 TIME_INDEX = 3
 PATH_INDEX = 6
 
-def main(filename, proxy, speedup=1):
+def main(filename, proxy, speedup=1, host=None):
     """Setup and start replaying."""    
     requests = _parse_logfile(filename)
     _setup_http_client(proxy)
-    _replay(requests, speedup)
+    _replay(requests, speedup, host)
 
-def _replay(requests, speedup):
+def _replay(requests, speedup, override_host):
     """Replay the requests passed as argument"""
     total_delta = requests[-1][0] - requests[0][0]
     print "%d requests to go (time: %s)" % (len(requests), total_delta)
@@ -34,7 +34,10 @@ def _replay(requests, speedup):
                 print "(next request in %d seconds)" % time_delta.seconds
             time.sleep(time_delta.seconds)
         last_time = request_time
-        url = "http://" + host + path
+        if override_host:
+            url = "http://" + override_host + path
+        else:
+            url = "http://" + host + path
         try:
             req_result = "OK"
             urllib2.urlopen(url)
@@ -75,6 +78,10 @@ if __name__ == "__main__":
         help='send requests to server PROXY',
         dest='proxy',
         default=None)
+    parser.add_option('-n', '--host',
+        help='send requests to host',
+        dest='host',
+        default=None)
     parser.add_option('-s', '--speedup',
         help='make time run faster by factor SPEEDUP',
         dest='speedup',
@@ -82,7 +89,7 @@ if __name__ == "__main__":
         default=1)
     (options, args) = parser.parse_args()
     if len(args) == 1:
-        main(args[0], options.proxy, options.speedup)
+        main(args[0], options.proxy, options.speedup, options.host)
     else:
         parser.error("incorrect number of arguments")
         
