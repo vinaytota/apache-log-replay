@@ -18,6 +18,7 @@ Simply download the file and execute it...
     
     Options:
       -h, --help            show this help message and exit
+      -n HOST --host=HOST   use provided host instead of one in apache logs
       -p PROXY, --proxy=PROXY
                             send requests to server PROXY
       -s SPEEDUP, --speedup=SPEEDUP
